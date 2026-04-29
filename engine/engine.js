@@ -85,12 +85,19 @@ function getFicoBandForProgram(fico, program) {
 }
 
 function getDscrBand(dscr, program) {
-  // Cake uses 4 DSCR buckets; AmWest uses 3
+  // Cake uses 4 DSCR buckets; AmWest uses 3; Change uses 3 (different boundaries)
   if (program && program.lender_id === "amwest") {
     if (dscr === null || dscr === undefined) return null;
     if (dscr >= 1.25) return "dscr_gte_1_25";
     if (dscr >= 1.00) return "dscr_gte_1_00";
     return "dscr_lt_1_00";
+  }
+  if (program && program.lender_id === "change") {
+    // Change Investor DSCR: 3 buckets, 1.25 cutoff for premium tier
+    if (dscr === null || dscr === undefined || dscr < 0.75) return null;
+    if (dscr >= 1.25) return "dscr_gte_1_25";
+    if (dscr >= 1.00) return "dscr_1_00_to_1_24";
+    return "dscr_0_75_to_0_99";
   }
   // Default to Cake's 4-bucket scheme
   if (dscr === null || dscr === undefined || dscr < 0.75) return "no_ratio_lt_0_75";
@@ -387,6 +394,17 @@ function computeWholesalePriceAtRate(noteRate, scenario, program) {
     if (propertyLlpa === "NA") return { eligible: false, reason: `Property type '${scenario.property_type}' not allowed at LTV ${scenario.ltv}%` };
     breakdown.property_type = propertyLlpa;
     llpaValues.push(propertyLlpa);
+  }
+
+  // STR overlay (Change) — additional LLPA when scenario.is_str is true.
+  // Stacks on top of base property_type LLPA. Cake handles STR differently
+  // (replaces dscr_ratio entirely with short_term_rental section), so this
+  // branch only fires for programs that store STR under property_type.short_term_rental.
+  if (scenario.is_str && additional.property_type && additional.property_type.short_term_rental) {
+    const strLlpa = lookupCell(additional.property_type.short_term_rental, ltvBand);
+    if (strLlpa === "NA") return { eligible: false, reason: `STR not allowed at LTV ${scenario.ltv}%` };
+    breakdown.short_term_rental_overlay = strLlpa;
+    llpaValues.push(strLlpa);
   }
 
   // FL Condo overlay (Cake or AmWest both have this)
