@@ -1,0 +1,380 @@
+{
+  "_README": "Change Lending \u2014 Foreign National DSCR Program. Source: Change rate sheet.pdf page 5 dated 2026-04-28. Built by build-change-fn-dscr.py. PRICING CONVENTION: Sign-flipped from standard wholesale to DP convention (positive = cost). DO NOT manually edit this JSON; re-run the build script. Note: this program has NO FICO-keyed LLPA grid on the rate sheet; min_fico is enforced as an eligibility floor only.",
+  "lender_id": "change",
+  "lender_display_name": "Change Lending",
+  "lender_nmls": "1839",
+  "program_id": "change_fn_dscr",
+  "program_display_name_internal": "Foreign National DSCR Program",
+  "program_category": "dscr",
+  "rate_sheet_source_page": 5,
+  "rate_sheet_date": "2026-04-28",
+  "rate_sheet_filename_when_imported": "Change rate sheet.pdf",
+  "schema_version": "3.0",
+  "verification_status": "phase_1a_2026_04_29_eligibility_floors_pending_ae_confirmation",
+  "_pricing_convention_note": "Change FN rate sheet uses STANDARD wholesale price convention (price above 100 = lender rebate). Same as Change Investor DSCR / LoanStream. All values NEGATED. base_rate_table = 100 - rate_sheet_price.",
+  "pricing_convention": {
+    "type": "adjustment_from_par",
+    "par": 100.0
+  },
+  "products_offered": {
+    "30_year_fixed_amortizing": {
+      "term_months": 360,
+      "amortization": "fully_amortizing"
+    }
+  },
+  "eligibility_rules": {
+    "min_fico": 680,
+    "max_fico": 850,
+    "no_score_allowed": false,
+    "min_loan": 150000,
+    "max_loan": 3000000,
+    "min_dscr": 1.0,
+    "foreign_national_min_dscr": 1.0,
+    "max_ltv_purchase": 75,
+    "max_ltv_rate_term_refi": 75,
+    "max_ltv_cashout": 70,
+    "interest_only_allowed": false,
+    "arm_allowed": false,
+    "occupancy_allowed": [
+      "non_owner_occupied"
+    ],
+    "property_types_allowed": [
+      "sfr",
+      "two_unit",
+      "three_four_unit",
+      "condo_warrantable"
+    ],
+    "borrower_types_allowed": [
+      "foreign_national"
+    ],
+    "states_excluded_for_program": [
+      "CA",
+      "AZ",
+      "ID",
+      "MN",
+      "NV",
+      "ND",
+      "OR",
+      "UT",
+      "VT"
+    ],
+    "states_pending_licensing": {
+      "CA": {
+        "estimated_approval_date": "2026-08",
+        "_note": "Rate Hero CA license expected ~Aug 2026"
+      }
+    },
+    "states_no_prepay_allowed": [
+      "AK",
+      "DE",
+      "KS",
+      "MD",
+      "MI",
+      "NJ",
+      "NH",
+      "NM",
+      "RI",
+      "VT"
+    ],
+    "states_prepay_allowed_above_loan_amount": {
+      "OH": 112000
+    }
+  },
+  "base_rate_table": {
+    "6.490": 2.316,
+    "6.500": 2.316,
+    "6.625": 1.691,
+    "6.750": 1.129,
+    "6.875": 0.566,
+    "6.990": 0.066,
+    "7.000": 0.066,
+    "7.125": -0.434,
+    "7.250": -0.871,
+    "7.375": -1.309,
+    "7.490": -1.684,
+    "7.500": -1.684,
+    "7.625": -2.059,
+    "7.750": -2.371,
+    "7.875": -2.684,
+    "7.990": -2.996,
+    "8.000": -2.996,
+    "8.125": -3.309,
+    "8.250": -3.59,
+    "8.375": -3.84,
+    "8.490": -4.09,
+    "8.500": -4.09,
+    "8.625": -4.34,
+    "8.750": -4.59,
+    "8.875": -4.84,
+    "8.990": -5.09,
+    "9.000": -5.09,
+    "9.125": -5.34,
+    "9.250": -5.59
+  },
+  "fico_ltv_adjustments": {
+    "_note": "Change FN program has NO FICO-keyed LLPA grid on the rate sheet. FICO eligibility is enforced via eligibility_rules.min_fico = 680 only. Empty grid is intentional; engine returns 0 LLPA from this section.",
+    "fico_bands": [],
+    "ltv_bands": [
+      "lte_50",
+      "50_55",
+      "55_60",
+      "60_65",
+      "65_70",
+      "70_75"
+    ],
+    "grid": {}
+  },
+  "additional_llpas": {
+    "program_overlay": {
+      "lte_50": -0.0,
+      "50_55": -0.0,
+      "55_60": -0.0,
+      "60_65": 0.25,
+      "65_70": 0.5,
+      "70_75": 1.0
+    },
+    "dscr_ratio": {
+      "dscr_gte_1_25": {
+        "lte_50": -0.0,
+        "50_55": -0.0,
+        "55_60": -0.0,
+        "60_65": -0.0,
+        "65_70": -0.0,
+        "70_75": -0.0
+      },
+      "dscr_1_00_to_1_24": {
+        "lte_50": -0.0,
+        "50_55": -0.0,
+        "55_60": -0.0,
+        "60_65": -0.0,
+        "65_70": -0.0,
+        "70_75": -0.0
+      },
+      "dscr_0_75_to_0_99": {
+        "lte_50": "NA",
+        "50_55": "NA",
+        "55_60": "NA",
+        "60_65": "NA",
+        "65_70": "NA",
+        "70_75": "NA"
+      }
+    },
+    "loan_amount": {
+      "_bands_definition_usd": {
+        "lte_250k": {
+          "min": 0,
+          "max": 250000
+        },
+        "250k_to_2m": {
+          "min": 250001,
+          "max": 2000000
+        },
+        "gt_2m": {
+          "min": 2000001,
+          "max": 3000000
+        }
+      },
+      "lte_250k": {
+        "lte_50": 0.125,
+        "50_55": 0.125,
+        "55_60": 0.125,
+        "60_65": 0.125,
+        "65_70": 0.125,
+        "70_75": 0.125
+      },
+      "250k_to_2m": {
+        "lte_50": -0.0,
+        "50_55": -0.0,
+        "55_60": -0.0,
+        "60_65": -0.0,
+        "65_70": -0.0,
+        "70_75": -0.0
+      },
+      "gt_2m": {
+        "lte_50": 0.25,
+        "50_55": 0.25,
+        "55_60": 0.25,
+        "60_65": 0.25,
+        "65_70": 0.5,
+        "70_75": 0.75
+      }
+    },
+    "loan_purpose": {
+      "purchase": {
+        "lte_50": -0.0,
+        "50_55": -0.0,
+        "55_60": -0.0,
+        "60_65": -0.0,
+        "65_70": -0.0,
+        "70_75": -0.0
+      },
+      "cash_out_refi": {
+        "lte_50": 0.5,
+        "50_55": 0.5,
+        "55_60": 0.5,
+        "60_65": 0.5,
+        "65_70": 0.5,
+        "70_75": "NA"
+      },
+      "rate_term_refi": {
+        "lte_50": -0.0,
+        "50_55": -0.0,
+        "55_60": -0.0,
+        "60_65": -0.0,
+        "65_70": -0.0,
+        "70_75": -0.0
+      }
+    },
+    "property_type": {
+      "sfr": {
+        "lte_50": -0.0,
+        "50_55": -0.0,
+        "55_60": -0.0,
+        "60_65": -0.0,
+        "65_70": -0.0,
+        "70_75": -0.0
+      },
+      "condo_warrantable": {
+        "lte_50": 0.125,
+        "50_55": 0.125,
+        "55_60": 0.25,
+        "60_65": 0.25,
+        "65_70": 0.375,
+        "70_75": 0.5
+      },
+      "two_unit": {
+        "lte_50": 0.25,
+        "50_55": 0.25,
+        "55_60": 0.25,
+        "60_65": 0.25,
+        "65_70": 0.25,
+        "70_75": 0.5
+      },
+      "three_four_unit": {
+        "lte_50": 0.25,
+        "50_55": 0.25,
+        "55_60": 0.25,
+        "60_65": 0.25,
+        "65_70": 0.25,
+        "70_75": 0.5
+      },
+      "fl_condo_overlay": {
+        "lte_50": -0.0,
+        "50_55": 0.125,
+        "55_60": 0.125,
+        "60_65": 0.25,
+        "65_70": 0.25,
+        "70_75": "NA"
+      },
+      "condo_non_warrantable": {
+        "lte_50": "NA",
+        "50_55": "NA",
+        "55_60": "NA",
+        "60_65": "NA",
+        "65_70": "NA",
+        "70_75": "NA"
+      },
+      "short_term_rental": {
+        "lte_50": "NA",
+        "50_55": "NA",
+        "55_60": "NA",
+        "60_65": "NA",
+        "65_70": "NA",
+        "70_75": "NA"
+      }
+    },
+    "prepay_penalty_llpa": {
+      "no_prepay": {
+        "lte_50": 1.625,
+        "50_55": 1.625,
+        "55_60": 1.625,
+        "60_65": 1.625,
+        "65_70": 1.625,
+        "70_75": 1.625
+      },
+      "one_year_prepay": {
+        "lte_50": 0.75,
+        "50_55": 0.75,
+        "55_60": 0.75,
+        "60_65": 0.75,
+        "65_70": 0.75,
+        "70_75": 0.75
+      },
+      "two_year_prepay": {
+        "lte_50": 0.5,
+        "50_55": 0.5,
+        "55_60": 0.5,
+        "60_65": 0.5,
+        "65_70": 0.5,
+        "70_75": 0.5
+      },
+      "three_year_prepay": {
+        "lte_50": -0.125,
+        "50_55": -0.125,
+        "55_60": -0.125,
+        "60_65": -0.125,
+        "65_70": -0.125,
+        "70_75": -0.125
+      },
+      "four_year_prepay": {
+        "lte_50": -0.375,
+        "50_55": -0.375,
+        "55_60": -0.375,
+        "60_65": -0.375,
+        "65_70": -0.375,
+        "70_75": -0.375
+      },
+      "five_year_prepay": {
+        "lte_50": -0.625,
+        "50_55": -0.625,
+        "55_60": -0.625,
+        "60_65": -0.625,
+        "65_70": -0.625,
+        "70_75": -0.625
+      }
+    }
+  },
+  "max_price_caps": {
+    "_README": "Change publishes max price as wholesale-price ceilings. Engine converts to DP floors via -(price-100). PPP buydown caps already in DP convention here.",
+    "investor_max_price_default": 101.0,
+    "min_price": 95.0,
+    "ppp_buydown_max_price_caps": {
+      "no_prepay": {
+        "max_price_purch_rt": -1.0,
+        "max_price_cashout": -1.0
+      },
+      "1_year_prepay": {
+        "max_price_purch_rt": -1.0,
+        "max_price_cashout": -1.0
+      },
+      "2_year_prepay": {
+        "max_price_purch_rt": -1.25,
+        "max_price_cashout": -1.25
+      },
+      "3_year_prepay": {
+        "max_price_purch_rt": -1.5,
+        "max_price_cashout": -1.5
+      },
+      "4_year_prepay": {
+        "max_price_purch_rt": -1.5,
+        "max_price_cashout": -1.5
+      },
+      "5_year_prepay": {
+        "max_price_purch_rt": -1.5,
+        "max_price_cashout": -1.5
+      }
+    }
+  },
+  "_phase_1b_pending": [
+    "Interest Only LLPA (published on rate sheet; OUT OF SCOPE in V1)",
+    "Escrow Waiver LLPA (published on rate sheet; OUT OF SCOPE in V1)",
+    "ARM products 5/6 SOFR, 10/6 SOFR (OUT OF SCOPE in V1)",
+    "Lock-term extension fees (OUT OF SCOPE in V1)",
+    "Engine should be updated to enforce property_types_allowed at eligibility filtering time (currently only enforced via NA values in additional_llpas.property_type)."
+  ],
+  "_pending_ae_confirmation": [
+    "min_fico=680 default \u2014 confirm with Change AE; FN programs sometimes 700+",
+    "max_loan=3,000,000 default \u2014 rate sheet has >$2M LLPA but no published cap",
+    "min_loan=150,000 default \u2014 no explicit minimum on rate sheet"
+  ]
+}
