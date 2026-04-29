@@ -123,10 +123,19 @@ const scenarioSummary =
 
 const subject = 'Rate Hero Engine — Loan Strategist Request' + subjectTierTag;
 
+const notes = borrowerNotes
+  ? borrowerNotes + '\n\n' + scenarioSummary
+  : scenarioSummary;
+
 console.log("================================================================");
 console.log("EMAIL SUBJECT:");
 console.log("================================================================");
 console.log(subject);
+console.log("");
+console.log("================================================================");
+console.log("NOTES (merged borrower notes + scenario summary):");
+console.log("================================================================");
+console.log(notes);
 console.log("");
 console.log("================================================================");
 console.log("SCENARIO SUMMARY (column O of Sheet):");

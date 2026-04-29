@@ -912,6 +912,9 @@ const COMP_CONFIG = {"_README":"Rate Hero compensation config. This file injects
       credit_score: ficoBand,
       timeline: 'asap',
       properties: '1',
+      notes: borrowerNotes
+        ? borrowerNotes + '\n\n' + scenarioSummary
+        : scenarioSummary,
       scenario_summary: scenarioSummary
     };
     try {
