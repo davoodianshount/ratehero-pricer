@@ -33,6 +33,8 @@ const COMP_CONFIG = {"_README":"Rate Hero compensation config. This file injects
 
   let SUBMISSION_MODE = 'pricing';
   let CURRENT_WAITLIST_STATE = null;
+  let LAST_PRICING_RESULT = null;  // cached after every pricing run; null on waitlist/rejected
+  let SELECTED_TIER = null;        // 'lightning' | 'thunder' | 'bolt' | null (null = generic CTA)
   let LOAN_AMOUNT_MANUALLY_EDITED = false;
 
   // =========================================================================
@@ -634,6 +636,8 @@ const COMP_CONFIG = {"_README":"Rate Hero compensation config. This file injects
       document.getElementById('rh-rejected-message').textContent = result.reason || 'Try adjusting your inputs, or talk to a loan strategist for a custom quote.';
       SUBMISSION_MODE = 'pricing';
       CURRENT_WAITLIST_STATE = null;
+      LAST_PRICING_RESULT = null;
+      SELECTED_TIER = null;
       return;
     }
     rejected.style.display = 'none';
@@ -643,6 +647,8 @@ const COMP_CONFIG = {"_README":"Rate Hero compensation config. This file injects
     renderTier('bolt', result.bolt);
     SUBMISSION_MODE = 'pricing';
     CURRENT_WAITLIST_STATE = null;
+    LAST_PRICING_RESULT = result;
+    SELECTED_TIER = null;
   }
 
   function handleScenarioSubmit(e) {
@@ -749,28 +755,164 @@ const COMP_CONFIG = {"_README":"Rate Hero compensation config. This file injects
       : 'goratehero.com/rates';
     const purchasePrice = parseMoneyInput(document.getElementById('purchase_price') ? document.getElementById('purchase_price').value : '0');
     const propertyValue = parseMoneyInput(document.getElementById('property_value') ? document.getElementById('property_value').value : '0');
+    const borrowerNotes = formData.get('notes') || '';
+    const fullName = ((formData.get('first_name') || '') + ' ' + (formData.get('last_name') || '')).trim();
+
+    // Map raw FICO to band label (matches existing CTA format like "760plus")
+    function getFicoBandLabel(fico) {
+      const f = parseInt(fico, 10);
+      if (f >= 780) return '780plus';
+      if (f >= 760) return '760-779';
+      if (f >= 740) return '740-759';
+      if (f >= 720) return '720-739';
+      if (f >= 700) return '700-719';
+      if (f >= 680) return '680-699';
+      if (f >= 660) return '660-679';
+      if (f >= 640) return '640-659';
+      if (f >= 620) return '620-639';
+      return 'below620';
+    }
+
+    function getLoanProgramLabel(purpose) {
+      if (purpose === 'purchase') return 'DSCR Purchase';
+      if (purpose === 'cash_out_refi') return 'DSCR Cash-Out Refi';
+      if (purpose === 'rate_term_refi') return 'DSCR Rate-Term Refi';
+      return 'DSCR';
+    }
+
+    function getPrepayLabel(term) {
+      const map = {
+        no_prepay: 'No prepay',
+        one_year: '1-year',
+        two_year: '2-year',
+        three_year: '3-year',
+        four_year: '4-year',
+        five_year: '5-year'
+      };
+      return map[term] || term;
+    }
+
+    function fmt(amount) {
+      const n = parseFloat(amount);
+      if (!n || isNaN(n)) return '—';
+      return '$' + Math.round(n).toLocaleString();
+    }
+
+    const ficoBand = getFicoBandLabel(scenario.fico);
+    const programLabel = getLoanProgramLabel(scenario.purpose);
+    const prepayLabel = getPrepayLabel(scenario.prepay_term);
+    const valueOrPrice = scenario.purpose === 'purchase' ? purchasePrice : propertyValue;
+    const valueOrPriceLabel = scenario.purpose === 'purchase' ? 'Purchase Price' : 'Property Value';
+
+    // === SELECTED TIER + LENDER (the gap we're closing) ===
+    // If borrower clicked Lightning/Thunder/Bolt, capture which one and which
+    // lender priced it (cake / amwest / loanstream / change). Otherwise
+    // (generic CTA, waitlist, or rejected scenario), this block is empty.
+    function getLenderDisplay(id) {
+      const map = {
+        cake: 'Cake Mortgage',
+        amwest: 'AmWest Funding',
+        loanstream: 'LoanStream Mortgage',
+        change: 'Change Lending'
+      };
+      return map[id] || id || 'Unknown';
+    }
+    let selectedTierBlock = '';
+    let subjectTierTag = '';
+    if (SELECTED_TIER && LAST_PRICING_RESULT && LAST_PRICING_RESULT.eligible && LAST_PRICING_RESULT[SELECTED_TIER]) {
+      const t = LAST_PRICING_RESULT[SELECTED_TIER];
+      const tierName = SELECTED_TIER.charAt(0).toUpperCase() + SELECTED_TIER.slice(1);
+      const lenderId = t._source_lender || (t._full_entry && t._full_entry.lender_id) || 'unknown';
+      const lenderDisplay = getLenderDisplay(lenderId);
+      const rate = (typeof t.note_rate === 'number') ? t.note_rate.toFixed(3) + '%' : '—';
+      const monthly = (typeof t.monthly_pi === 'number') ? '$' + Math.round(t.monthly_pi).toLocaleString() : '—';
+      const dollars = t._full_entry && typeof t._full_entry.dollar_cost_or_credit === 'number'
+        ? t._full_entry.dollar_cost_or_credit
+        : (t.cost_dollars || 0);
+      const dollarLabel = (t.is_lender_credit || dollars < 0)
+        ? '$' + Math.abs(Math.round(dollars)).toLocaleString() + ' lender credit'
+        : '$' + Math.round(dollars).toLocaleString() + ' cost at closing';
+      subjectTierTag = ' [' + tierName + ' / ' + lenderId + ']';
+      selectedTierBlock =
+        '\n--- Selected Tier (Borrower Clicked) ---\n' +
+        'Tier: ' + tierName + '\n' +
+        'Lender: ' + lenderDisplay + ' (lender_id: ' + lenderId + ')\n' +
+        'Rate: ' + rate + '\n' +
+        'Monthly P&I: ' + monthly + '\n' +
+        'Closing: ' + dollarLabel + '\n';
+    } else if (LAST_PRICING_RESULT && LAST_PRICING_RESULT.eligible) {
+      selectedTierBlock =
+        '\n--- Selected Tier (Borrower Clicked) ---\n' +
+        '(Generic "Talk to a Strategist" CTA — borrower did not pick a specific tier. ' +
+        'They saw the full Lightning / Thunder / Bolt menu.)\n';
+    }
+
+    // Build the Scenario Summary text (lands in column O of the Google Sheet,
+    // and is the cell Benji's import + the LO email both read for full context).
+    let scenarioSummary;
+    if (isWaitlist) {
+      scenarioSummary =
+        'WAITLIST SIGNUP for ' + (stateInfo ? stateInfo.name : scenario.state) + '. ' +
+        'Borrower wants to be notified when Rate Hero is licensed in ' + (stateInfo ? stateInfo.name : scenario.state) + '. ' +
+        'They built a pricing scenario but the state is not yet licensed.\n\n' +
+        (borrowerNotes ? 'Borrower notes: ' + borrowerNotes + '\n\n' : '') +
+        '--- Pricer Scenario ---\n' +
+        'Program: ' + programLabel + '\n' +
+        valueOrPriceLabel + ': ' + fmt(valueOrPrice) + '\n' +
+        'Loan Amount: ' + fmt(scenario.loan_amount) + '\n' +
+        'LTV: ' + scenario.ltv + '%\n' +
+        'FICO: ' + scenario.fico + ' (band ' + ficoBand + ')\n' +
+        'DSCR Ratio: ' + scenario.dscr + '\n' +
+        'Property Type: ' + scenario.property_type + '\n' +
+        'State: ' + scenario.state + '\n' +
+        'Prepay Term: ' + prepayLabel + '\n' +
+        'Submission Mode: waitlist\n' +
+        'Waitlist State: ' + (CURRENT_WAITLIST_STATE || scenario.state) + '\n' +
+        'Submission Source: ' + submissionSource +
+        selectedTierBlock;
+    } else {
+      scenarioSummary =
+        'Pricing scenario: ' + programLabel + ', ' + scenario.state + ', ' +
+        scenario.property_type + ', ' + fmt(valueOrPrice) + ' ' + valueOrPriceLabel.toLowerCase() + ', ' +
+        fmt(scenario.loan_amount) + ' loan, ' + scenario.ltv + '% LTV, ' +
+        ficoBand + ' FICO, DSCR ' + scenario.dscr + ', prepay: ' + prepayLabel + '. ' +
+        'Borrower wants a real quote.\n\n' +
+        (borrowerNotes ? 'Borrower notes: ' + borrowerNotes + '\n\n' : '') +
+        '--- Pricer Scenario ---\n' +
+        'Program: ' + programLabel + '\n' +
+        valueOrPriceLabel + ': ' + fmt(valueOrPrice) + '\n' +
+        'Loan Amount: ' + fmt(scenario.loan_amount) + '\n' +
+        'LTV: ' + scenario.ltv + '%\n' +
+        'FICO: ' + scenario.fico + ' (band ' + ficoBand + ')\n' +
+        'DSCR Ratio: ' + scenario.dscr + '\n' +
+        'Property Type: ' + scenario.property_type + '\n' +
+        'State: ' + scenario.state + '\n' +
+        'Prepay Term: ' + prepayLabel + '\n' +
+        'Submission Mode: pricing\n' +
+        'Submission Source: ' + submissionSource +
+        selectedTierBlock;
+    }
+
+    // Payload uses the SAME field names as your other goratehero.com CTAs so
+    // the Web3Forms -> Google Sheet -> Benji import flow doesn't need any changes.
+    // Pricer-specific richness lives inside scenario_summary (column O).
     const payload = {
       access_key: WEB3FORMS_KEY,
-      subject: subject,
+      subject: subject + subjectTierTag,
       from_name: 'Rate Hero Engine',
-      first_name: formData.get('first_name'),
-      last_name: formData.get('last_name'),
+      name: fullName,
       email: formData.get('email'),
       phone: formData.get('phone'),
-      notes: formData.get('notes') || '',
-      scenario_fico: scenario.fico,
-      scenario_loan_amount: scenario.loan_amount,
-      scenario_purchase_price: purchasePrice || '',
-      scenario_property_value: propertyValue || '',
-      scenario_ltv: scenario.ltv,
-      scenario_dscr: scenario.dscr,
-      scenario_purpose: scenario.purpose,
-      scenario_state: scenario.state,
-      scenario_property_type: scenario.property_type,
-      scenario_prepay_term: scenario.prepay_term,
-      submission_source: submissionSource,
-      submission_mode: SUBMISSION_MODE,
-      waitlist_state: CURRENT_WAITLIST_STATE || ''
+      loan_program: 'dscr',
+      borrower_type: 'real estate investor',
+      property_type: scenario.property_type,
+      state: scenario.state,
+      property_address: '',
+      loan_amount: scenario.loan_amount,
+      credit_score: ficoBand,
+      timeline: 'asap',
+      properties: '1',
+      scenario_summary: scenarioSummary
     };
     try {
       const response = await fetch('https://api.web3forms.com/submit', {
@@ -797,16 +939,19 @@ const COMP_CONFIG = {"_README":"Rate Hero compensation config. This file injects
 
   document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('rh-scenario-form').addEventListener('submit', handleScenarioSubmit);
-    document.getElementById('rh-strategist-btn').addEventListener('click', function() { openStrategistModal(); });
-    document.getElementById('rh-rejected-strategist-btn').addEventListener('click', function() { openStrategistModal(); });
-    document.getElementById('rh-waitlist-btn').addEventListener('click', function() { openStrategistModal(); });
+    document.getElementById('rh-strategist-btn').addEventListener('click', function() { SELECTED_TIER = null; openStrategistModal(); });
+    document.getElementById('rh-rejected-strategist-btn').addEventListener('click', function() { SELECTED_TIER = null; openStrategistModal(); });
+    document.getElementById('rh-waitlist-btn').addEventListener('click', function() { SELECTED_TIER = null; openStrategistModal(); });
     document.getElementById('rh-modal-close').addEventListener('click', closeStrategistModal);
     document.getElementById('rh-strategist-form').addEventListener('submit', handleStrategistSubmit);
     document.getElementById('rh-strategist-modal').addEventListener('click', function(e) {
       if (e.target === this) closeStrategistModal();
     });
     document.querySelectorAll('.rh-btn-tier').forEach(function(btn) {
-      btn.addEventListener('click', function() { openStrategistModal(); });
+      btn.addEventListener('click', function() {
+        SELECTED_TIER = btn.getAttribute('data-tier') || null;
+        openStrategistModal();
+      });
     });
 
     // Conditional fields based on Goal
