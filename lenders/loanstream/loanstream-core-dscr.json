@@ -1,0 +1,477 @@
+{
+  "_README": "LoanStream Mortgage \u2014 Core DSCR (>=1.20) program. Source: rate sheet PDF page 2 dated 2026-04-23. Built by build-loanstream-core-dscr.py. PRICING CONVENTION: This JSON has been sign-flipped from the LoanStream rate sheet to match the Rate Hero engine's DP convention (positive = cost to borrower). DO NOT use raw LoanStream values without re-running the build script \u2014 manual edits will introduce inversion bugs.",
+  "lender_id": "loanstream",
+  "lender_display_name": "LoanStream Mortgage",
+  "lender_nmls": "129932",
+  "program_id": "loanstream_core_dscr_gte_1_20",
+  "program_display_name_internal": "Core DSCR (>=1.20)",
+  "program_category": "dscr",
+  "rate_sheet_source_page": 2,
+  "rate_sheet_date": "2026-04-23",
+  "rate_sheet_time_pt": "06:48",
+  "rate_sheet_lock_cutoff_pt": "17:00",
+  "rate_sheet_filename_when_imported": "loanstream_pricer.pdf",
+  "schema_version": "3.0",
+  "verification_status": "phase_1a_2026_04_28_phase_1b_pending",
+  "_pricing_convention_note": "LoanStream rate sheet uses STANDARD wholesale price convention (price above 100 = lender rebate). Rate Hero engine uses DP convention (positive = cost). All values in this JSON have been NEGATED from the source rate sheet. base_rate_table = 100 - rate_sheet_price; LLPAs negated.",
+  "pricing_convention": {
+    "type": "adjustment_from_par",
+    "par": 100.0
+  },
+  "products_offered": {
+    "30_year_fixed_amortizing": {
+      "term_months": 360,
+      "amortization": "fully_amortizing"
+    }
+  },
+  "eligibility_rules": {
+    "min_fico": 620,
+    "max_fico": 850,
+    "no_score_allowed": false,
+    "min_loan": 150000,
+    "max_loan": 4000000,
+    "min_dscr": 1.2,
+    "max_ltv_purchase": 75,
+    "max_ltv_rate_term_refi": 75,
+    "max_ltv_cashout": 70,
+    "interest_only_allowed": false,
+    "arm_allowed": false,
+    "occupancy_allowed": [
+      "non_owner_occupied"
+    ],
+    "property_types_allowed": [
+      "sfr",
+      "two_unit",
+      "three_four_unit",
+      "condo_warrantable",
+      "condo_non_warrantable"
+    ],
+    "borrower_types_allowed": [
+      "us_citizen",
+      "permanent_resident",
+      "foreign_national",
+      "itin"
+    ],
+    "foreign_national_min_dscr": 1.2,
+    "foreign_national_min_fico_pricing": 700,
+    "states_excluded_for_program": [
+      "CA",
+      "AZ",
+      "ID",
+      "MN",
+      "NV",
+      "ND",
+      "OR",
+      "UT",
+      "VT"
+    ],
+    "states_pending_licensing": {
+      "CA": {
+        "estimated_approval_date": "2026-08",
+        "_note": "Rate Hero CA license expected ~Aug 2026"
+      }
+    },
+    "states_no_prepay_allowed": [],
+    "states_prepay_allowed_above_loan_amount": {},
+    "min_dscr_for_1x30x12_history": 1.2
+  },
+  "base_rate_table": {
+    "5.875": 2.462,
+    "5.999": 1.712,
+    "6.125": 1.087,
+    "6.250": 0.65,
+    "6.375": 0.274,
+    "6.499": -0.226,
+    "6.625": -0.694,
+    "6.750": -1.132,
+    "6.875": -1.554,
+    "6.999": -1.96,
+    "7.125": -2.335,
+    "7.250": -2.71,
+    "7.375": -3.085,
+    "7.499": -3.429,
+    "7.625": -3.741,
+    "7.750": -4.022,
+    "7.875": -4.304,
+    "7.999": -4.585,
+    "8.125": -4.866,
+    "8.250": -5.147,
+    "8.375": -5.429,
+    "8.499": -5.71,
+    "8.625": -5.96,
+    "8.750": -6.21,
+    "8.875": -6.46,
+    "8.999": -6.71,
+    "9.125": -6.96,
+    "9.250": -7.085,
+    "9.375": -7.21,
+    "9.499": -7.335,
+    "9.625": -7.46,
+    "9.750": -7.585,
+    "9.875": -7.71,
+    "9.999": -7.835,
+    "10.125": -7.96,
+    "10.250": -8.085,
+    "10.375": -8.21,
+    "10.499": -8.335,
+    "10.625": -8.46,
+    "10.750": -8.585
+  },
+  "fico_ltv_adjustments": {
+    "fico_bands": [
+      "780_plus",
+      "760_779",
+      "740_759",
+      "720_739",
+      "700_719",
+      "680_699",
+      "660_679",
+      "640_659",
+      "620_639"
+    ],
+    "ltv_bands": [
+      "lte_50",
+      "50_55",
+      "55_60",
+      "60_65",
+      "65_70",
+      "70_75",
+      "75_80",
+      "80_85"
+    ],
+    "grid": {
+      "780_plus": {
+        "lte_50": -1.275,
+        "50_55": -1.15,
+        "55_60": -1.025,
+        "60_65": -1.0,
+        "65_70": -0.625,
+        "70_75": -0.55,
+        "75_80": 0.625,
+        "80_85": 2.5
+      },
+      "760_779": {
+        "lte_50": -1.15,
+        "50_55": -1.0,
+        "55_60": -1.0,
+        "60_65": -0.85,
+        "65_70": -0.5,
+        "70_75": -0.425,
+        "75_80": 0.875,
+        "80_85": 2.75
+      },
+      "740_759": {
+        "lte_50": -1.0,
+        "50_55": -0.875,
+        "55_60": -0.875,
+        "60_65": -0.713,
+        "65_70": -0.4,
+        "70_75": -0.213,
+        "75_80": 1.0,
+        "80_85": 3.0
+      },
+      "720_739": {
+        "lte_50": -0.875,
+        "50_55": -0.75,
+        "55_60": -0.75,
+        "60_65": -0.65,
+        "65_70": -0.025,
+        "70_75": 0.1,
+        "75_80": 1.875,
+        "80_85": 3.5
+      },
+      "700_719": {
+        "lte_50": -0.5,
+        "50_55": -0.25,
+        "55_60": 0.25,
+        "60_65": -0.025,
+        "65_70": 0.25,
+        "70_75": 1.0,
+        "75_80": 2.625,
+        "80_85": "NA"
+      },
+      "680_699": {
+        "lte_50": -0.25,
+        "50_55": 0.125,
+        "55_60": 0.125,
+        "60_65": 0.25,
+        "65_70": 0.85,
+        "70_75": 1.5,
+        "75_80": 3.375,
+        "80_85": "NA"
+      },
+      "660_679": {
+        "lte_50": 0.25,
+        "50_55": 0.25,
+        "55_60": 0.75,
+        "60_65": 1.25,
+        "65_70": 1.975,
+        "70_75": 2.6,
+        "75_80": "NA",
+        "80_85": "NA"
+      },
+      "640_659": {
+        "lte_50": 0.9,
+        "50_55": 1.25,
+        "55_60": 1.65,
+        "60_65": 1.875,
+        "65_70": 2.875,
+        "70_75": 3.625,
+        "75_80": "NA",
+        "80_85": "NA"
+      },
+      "620_639": {
+        "lte_50": 2.0,
+        "50_55": 2.25,
+        "55_60": 2.4,
+        "60_65": 2.875,
+        "65_70": 3.625,
+        "70_75": "NA",
+        "75_80": "NA",
+        "80_85": "NA"
+      }
+    }
+  },
+  "additional_llpas": {
+    "program_overlay": {
+      "lte_50": -0.5,
+      "50_55": -0.5,
+      "55_60": -0.5,
+      "60_65": -0.5,
+      "65_70": -0.5,
+      "70_75": -0.5,
+      "75_80": "NA",
+      "80_85": "NA"
+    },
+    "loan_purpose": {
+      "purchase": {
+        "lte_50": -0.0,
+        "50_55": -0.0,
+        "55_60": -0.0,
+        "60_65": -0.0,
+        "65_70": -0.0,
+        "70_75": -0.0,
+        "75_80": -0.0,
+        "80_85": -0.0
+      },
+      "rate_term_refi": {
+        "lte_50": -0.0,
+        "50_55": -0.0,
+        "55_60": -0.0,
+        "60_65": -0.0,
+        "65_70": -0.0,
+        "70_75": -0.0,
+        "75_80": 0.25,
+        "80_85": 0.5
+      },
+      "cash_out_refi": {
+        "lte_50": 0.125,
+        "50_55": 0.25,
+        "55_60": 0.375,
+        "60_65": 0.5,
+        "65_70": 0.5,
+        "70_75": 0.75,
+        "75_80": "NA",
+        "80_85": "NA"
+      }
+    },
+    "loan_purpose_fico_lt_680_overlay": {
+      "rate_term_refi": {
+        "lte_50": 0.25,
+        "50_55": 0.25,
+        "55_60": 0.25,
+        "60_65": 0.25,
+        "65_70": 0.25,
+        "70_75": 0.25,
+        "75_80": 0.375,
+        "80_85": "NA"
+      },
+      "cash_out_refi": {
+        "lte_50": 0.5,
+        "50_55": 0.5,
+        "55_60": 0.625,
+        "60_65": 0.75,
+        "65_70": 0.75,
+        "70_75": 1.0,
+        "75_80": "NA",
+        "80_85": "NA"
+      }
+    },
+    "prepay_penalty_llpa": {
+      "no_prepay": {
+        "lte_50": 1.75,
+        "50_55": 1.75,
+        "55_60": 1.75,
+        "60_65": 1.75,
+        "65_70": 1.75,
+        "70_75": 1.75,
+        "75_80": 1.75,
+        "80_85": 2.0
+      },
+      "one_year_prepay": {
+        "lte_50": 1.0,
+        "50_55": 1.0,
+        "55_60": 1.0,
+        "60_65": 1.0,
+        "65_70": 1.0,
+        "70_75": 1.0,
+        "75_80": 1.0,
+        "80_85": 1.0
+      },
+      "two_year_prepay": {
+        "lte_50": 0.5,
+        "50_55": 0.5,
+        "55_60": 0.5,
+        "60_65": 0.5,
+        "65_70": 0.5,
+        "70_75": 0.75,
+        "75_80": 0.75,
+        "80_85": 0.75
+      },
+      "three_year_prepay": {
+        "lte_50": -0.25,
+        "50_55": -0.125,
+        "55_60": -0.125,
+        "60_65": -0.125,
+        "65_70": -0.125,
+        "70_75": -0.125,
+        "75_80": -0.125,
+        "80_85": -0.063
+      },
+      "four_year_prepay": {
+        "lte_50": -0.375,
+        "50_55": -0.25,
+        "55_60": -0.25,
+        "60_65": -0.25,
+        "65_70": -0.25,
+        "70_75": -0.25,
+        "75_80": -0.25,
+        "80_85": -0.125
+      },
+      "five_year_prepay": {
+        "lte_50": -0.75,
+        "50_55": -0.625,
+        "55_60": -0.625,
+        "60_65": -0.625,
+        "65_70": -0.625,
+        "70_75": -0.625,
+        "75_80": -0.625,
+        "80_85": -0.5
+      }
+    },
+    "state_tier_overlay": {
+      "tier_1_states": [
+        "AZ",
+        "CA",
+        "CO",
+        "CT",
+        "GA",
+        "HI",
+        "MA",
+        "MD",
+        "NJ",
+        "NV",
+        "OR",
+        "SC",
+        "UT",
+        "VA",
+        "WA"
+      ],
+      "tier_1_llpa": -0.0,
+      "tier_2_states": [
+        "DC",
+        "FL",
+        "ID",
+        "IL",
+        "IN",
+        "LA",
+        "MI",
+        "MN",
+        "MO",
+        "NC",
+        "OH",
+        "OK",
+        "PA",
+        "RI",
+        "TN",
+        "TX"
+      ],
+      "tier_2_llpa": 0.15,
+      "tier_3_states": [
+        "AK",
+        "AL",
+        "AR",
+        "DE",
+        "IA",
+        "KS",
+        "KY",
+        "ME",
+        "MS",
+        "MT",
+        "ND",
+        "NE",
+        "NH",
+        "NM",
+        "SD",
+        "VT",
+        "WI",
+        "WV",
+        "WY"
+      ],
+      "tier_3_llpa": 0.25
+    }
+  },
+  "max_price_caps": {
+    "_README": "LoanStream caps in standard wholesale price format. Engine converts: globalFloor = -(investor_max_price - 100). PPP buydown caps already expressed in our DP convention (negative = max rebate).",
+    "investor_max_price_default": 102.0,
+    "owner_occupied_or_2nd_home_max_price": 102.0,
+    "min_price": 95.0,
+    "ppp_buydown_max_price_caps": {
+      "no_prepay": {
+        "max_price_purch_rt": -0.0,
+        "max_price_cashout": -0.0
+      },
+      "1_year_prepay": {
+        "max_price_purch_rt": -1.5,
+        "max_price_cashout": -1.5
+      },
+      "2_year_prepay": {
+        "max_price_purch_rt": -2.0,
+        "max_price_cashout": -2.0
+      },
+      "3_year_prepay": {
+        "max_price_purch_rt": -2.5,
+        "max_price_cashout": -2.5
+      },
+      "4_year_prepay": {
+        "max_price_purch_rt": -2.5,
+        "max_price_cashout": -2.5
+      },
+      "5_year_prepay": {
+        "max_price_purch_rt": -2.5,
+        "max_price_cashout": -2.5
+      }
+    },
+    "additional_overlays_pending_phase_1b": {
+      "subord_financing": 100.0,
+      "itin_foreign_natl": 101.0,
+      "ltv_above_80": 101.0,
+      "loan_above_2_5m": 101.0
+    }
+  },
+  "_phase_1b_pending": [
+    "loan_amount LLPA (11 size bands)",
+    "property/units LLPA (NOO, 2nd, NW Condo, STR, 2-unit, 3-4 unit)",
+    "subordinate_financing LLPA",
+    "interest-only and ARM products",
+    "escrow_waived LLPA",
+    "ITIN LLPA",
+    "foreign_national LLPA",
+    "payment history (0x30x12, 1x30x12, etc.)",
+    "credit events (12/24/36/48 months)",
+    "DSCR 5-8 unit pricing column",
+    "other DSCR programs: Core >=1.00, Sub1, No Ratio, Fusion",
+    "lock term LLPA (45-day, 60-day)",
+    "additional max-price overlay enforcement (subord, ITIN, LTV>80, jumbo)"
+  ]
+}

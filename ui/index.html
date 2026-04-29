@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Your Deal — Rate Hero Engine</title>
+  <meta name="description" content="Instantly structure your DSCR loan using rental income. Real rates from real lenders.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header class="rh-header">
+    <div class="rh-container rh-header-inner">
+      <a href="https://goratehero.com" class="rh-logo">
+        <span class="rh-bolt">⚡</span>
+        <span class="rh-logo-text">Rate Hero</span>
+      </a>
+      <nav class="rh-nav">
+        <a href="https://goratehero.com">Home</a>
+        <a href="https://goratehero.com/pages/loan-programs.html">Loan Programs</a>
+        <a href="#" class="rh-nav-current">Rates</a>
+        <a href="https://goratehero.com/blog/">Blog</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="rh-main">
+    <div class="rh-container">
+
+      <section class="rh-hero">
+        <div class="rh-hero-eyebrow">⚡ INSTANT PRICING</div>
+        <h1 class="rh-hero-headline">Build Your Deal. Choose Your Rate.</h1>
+        <p class="rh-hero-sub">Instantly structure your loan using rental income — the property qualifies itself.</p>
+      </section>
+
+      <section class="rh-pricer">
+        <div class="rh-pricer-grid">
+
+          <div class="rh-form-card">
+            <h2 class="rh-form-title">Your Scenario</h2>
+
+            <form id="rh-scenario-form" novalidate>
+
+              <!-- ===== GOAL ===== -->
+              <div class="rh-field">
+                <label for="goal">What are you trying to do?</label>
+                <select id="goal" name="goal" required>
+                  <option value="purchase" selected>Buy an Investment Property</option>
+                  <option value="refinance">Refinance a Property I Own</option>
+                </select>
+              </div>
+
+              <!-- ===== REFINANCE TYPE ===== -->
+              <div class="rh-field rh-conditional rh-refi-only" data-show-if-goal="refinance" style="display:none;">
+                <label for="refi_type">What kind of refinance?</label>
+                <select id="refi_type" name="refi_type">
+                  <option value="rate_term_refi" selected>Lower My Rate / Term</option>
+                  <option value="cash_out_refi">Cash Out Equity</option>
+                </select>
+                <div class="rh-help">Cash-out has different LTV limits and pricing.</div>
+              </div>
+
+              <!-- ===== PURCHASE PRICE (only shown if Goal = purchase) ===== -->
+              <div class="rh-field rh-conditional rh-purchase-only" data-show-if-goal="purchase">
+                <label for="purchase_price">Purchase Price</label>
+                <input type="text" id="purchase_price" name="purchase_price" value="$400,000" inputmode="numeric">
+                <div class="rh-help">Property purchase price</div>
+              </div>
+
+              <!-- ===== DOWN PAYMENT (only shown if Goal = purchase) ===== -->
+              <div class="rh-field rh-conditional rh-purchase-only" data-show-if-goal="purchase">
+                <label for="down_payment">Down Payment (%)</label>
+                <input type="number" id="down_payment" name="down_payment" value="25" min="15" max="85" step="1">
+                <div class="rh-help">How much you're putting down</div>
+              </div>
+
+              <!-- ===== PROPERTY VALUE (only shown if Goal = refinance) ===== -->
+              <div class="rh-field rh-conditional rh-refi-only" data-show-if-goal="refinance" style="display:none;">
+                <label for="property_value">Estimated Property Value</label>
+                <input type="text" id="property_value" name="property_value" value="$400,000" inputmode="numeric">
+                <div class="rh-help">What is the home worth today?</div>
+              </div>
+
+              <!-- ===== LOAN AMOUNT (always shown, auto-calculated for purchase) ===== -->
+              <div class="rh-field">
+                <label for="loan_amount">Loan Amount</label>
+                <input type="text" id="loan_amount" name="loan_amount" value="$300,000" inputmode="numeric" required>
+                <div class="rh-help" id="loan_amount_help">Estimated loan size (auto-calculated, you can override)</div>
+              </div>
+
+              <!-- ===== CREDIT SCORE ===== -->
+              <div class="rh-field">
+                <label for="fico">Estimated Credit Score</label>
+                <select id="fico" name="fico" required>
+                  <option value="780">760+ (Excellent)</option>
+                  <option value="750">740-759 (Very Good)</option>
+                  <option value="730" selected>720-739 (Good)</option>
+                  <option value="710">700-719</option>
+                  <option value="690">680-699</option>
+                  <option value="670">660-679</option>
+                  <option value="650">640-659</option>
+                  <option value="630">620-639</option>
+                </select>
+                <div class="rh-help">Your approximate FICO range</div>
+              </div>
+
+              <!-- ===== DSCR ===== -->
+              <div class="rh-field rh-field-dscr">
+                <label for="dscr">
+                  Property Cash Flow (DSCR)
+                  <button type="button" class="rh-tooltip-trigger" id="rh-dscr-tooltip-btn" aria-label="What is DSCR?">?</button>
+                </label>
+                <input type="number" id="dscr" name="dscr" value="1.20" min="0" max="3" step="0.01" required>
+                <div class="rh-help">Rental income ÷ mortgage payment (1.0 = breaks even)</div>
+                <div class="rh-tooltip-content" id="rh-dscr-tooltip" style="display:none;">
+                  <strong>What is DSCR?</strong>
+                  <p>Debt Service Coverage Ratio = Annual Rental Income ÷ Annual Mortgage Payment (PITIA).</p>
+                  <p><strong>Example:</strong> Property rents for $3,000/mo ($36K/yr). Mortgage payment is $2,000/mo ($24K/yr). DSCR = $36K ÷ $24K = <strong>1.50</strong>.</p>
+                  <p><strong>Quick reference:</strong></p>
+                  <ul>
+                    <li><strong>1.00</strong> — Property breaks even</li>
+                    <li><strong>1.15</strong> — 15% positive cash flow (qualifies most programs)</li>
+                    <li><strong>1.25+</strong> — Strong cash flow (best pricing)</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- ===== PROPERTY TYPE ===== -->
+              <div class="rh-field">
+                <label for="property_type">Property Type</label>
+                <select id="property_type" name="property_type" required>
+                  <option value="sfr" selected>Single Family Residence</option>
+                  <option value="two_unit">2-Unit</option>
+                  <option value="three_four_unit">3-4 Unit</option>
+                  <option value="condo_warrantable">Warrantable Condo</option>
+                  <option value="condo_non_warrantable">Non-Warrantable Condo</option>
+                </select>
+              </div>
+
+              <!-- ===== PREPAYMENT OPTION ===== -->
+              <div class="rh-field">
+                <label for="prepay_term">Prepayment Option</label>
+                <select id="prepay_term" name="prepay_term" required>
+                  <option value="five_year" selected>5-Year</option>
+                  <option value="four_year">4-Year</option>
+                  <option value="three_year">3-Year</option>
+                  <option value="two_year">2-Year</option>
+                  <option value="one_year">1-Year</option>
+                  <option value="no_prepay">No Prepayment Penalty</option>
+                </select>
+                <div class="rh-help">Lower rate with a short-term hold</div>
+              </div>
+
+              <!-- ===== STATE ===== -->
+              <div class="rh-field">
+                <label for="state">State</label>
+                <select id="state" name="state" required>
+                  <option value="">Select your state</option>
+
+                  <optgroup label="Available Now">
+                    <option value="AL">Alabama</option>
+                    <option value="AR">Arkansas</option>
+                    <option value="CO">Colorado</option>
+                    <option value="CT">Connecticut</option>
+                    <option value="DC">District of Columbia</option>
+                    <option value="FL">Florida</option>
+                    <option value="GA">Georgia</option>
+                    <option value="HI">Hawaii</option>
+                    <option value="IA">Iowa</option>
+                    <option value="IL">Illinois</option>
+                    <option value="IN">Indiana</option>
+                    <option value="KY">Kentucky</option>
+                    <option value="LA">Louisiana</option>
+                    <option value="MA">Massachusetts</option>
+                    <option value="ME">Maine</option>
+                    <option value="MI">Michigan</option>
+                    <option value="MO">Missouri</option>
+                    <option value="MS">Mississippi</option>
+                    <option value="MT">Montana</option>
+                    <option value="NC">North Carolina</option>
+                    <option value="NE">Nebraska</option>
+                    <option value="NH">New Hampshire</option>
+                    <option value="NJ">New Jersey</option>
+                    <option value="NY">New York</option>
+                    <option value="OH">Ohio</option>
+                    <option value="OK">Oklahoma</option>
+                    <option value="PA">Pennsylvania</option>
+                    <option value="SC">South Carolina</option>
+                    <option value="SD">South Dakota</option>
+                    <option value="TN">Tennessee</option>
+                    <option value="TX" selected>Texas</option>
+                    <option value="VA">Virginia</option>
+                    <option value="WA">Washington</option>
+                    <option value="WI">Wisconsin</option>
+                    <option value="WV">West Virginia</option>
+                    <option value="WY">Wyoming</option>
+                  </optgroup>
+
+                  <optgroup label="Coming Soon — Join Waitlist">
+                    <option value="CA" data-waitlist="true">California (Coming Soon)</option>
+                    <option value="AZ" data-waitlist="true">Arizona (Coming Soon)</option>
+                    <option value="ID" data-waitlist="true">Idaho (Coming Soon)</option>
+                    <option value="MN" data-waitlist="true">Minnesota (Coming Soon)</option>
+                    <option value="NV" data-waitlist="true">Nevada (Coming Soon)</option>
+                    <option value="ND" data-waitlist="true">North Dakota (Coming Soon)</option>
+                    <option value="OR" data-waitlist="true">Oregon (Coming Soon)</option>
+                    <option value="UT" data-waitlist="true">Utah (Coming Soon)</option>
+                    <option value="VT" data-waitlist="true">Vermont (Coming Soon)</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <div class="rh-no-pressure">No calls. No pressure. Just instant clarity.</div>
+
+              <button type="submit" class="rh-btn rh-btn-primary" id="rh-submit-btn">
+                See My Options →
+              </button>
+
+            </form>
+          </div>
+
+          <div class="rh-results-panel">
+
+            <div class="rh-results-empty" id="rh-results-empty">
+              <div class="rh-empty-icon">⚡</div>
+              <h3>Your options will appear here</h3>
+              <p>Fill out the form and click "See My Options" to see real rates from our lender network.</p>
+            </div>
+
+            <div class="rh-results-active" id="rh-results-active" style="display:none;">
+
+              <div class="rh-results-header">
+                <h2>Choose the structure that fits your strategy.</h2>
+              </div>
+
+              <div class="rh-tier-cards">
+
+                <div class="rh-tier-card rh-tier-lightning">
+                  <div class="rh-tier-label">⚡ Lightning</div>
+                  <div class="rh-tier-tagline">Lowest Rate</div>
+                  <div class="rh-tier-rate" id="lightning-rate">—</div>
+                  <div class="rh-tier-rate-label">Note Rate</div>
+                  <div class="rh-tier-payment" id="lightning-payment">$—</div>
+                  <div class="rh-tier-payment-label">Monthly P&amp;I</div>
+                  <div class="rh-tier-cost" id="lightning-cost">—</div>
+                  <div class="rh-tier-desc">Lower monthly payment with a short-term hold.</div>
+                  <button class="rh-btn rh-btn-tier" data-tier="lightning">Choose This Structure</button>
+                </div>
+
+                <div class="rh-tier-card rh-tier-thunder">
+                  <div class="rh-tier-label">⚡ Thunder</div>
+                  <div class="rh-tier-tagline">Balanced Option</div>
+                  <div class="rh-tier-rate" id="thunder-rate">—</div>
+                  <div class="rh-tier-rate-label">Note Rate</div>
+                  <div class="rh-tier-payment" id="thunder-payment">$—</div>
+                  <div class="rh-tier-payment-label">Monthly P&amp;I</div>
+                  <div class="rh-tier-cost" id="thunder-cost">—</div>
+                  <div class="rh-tier-desc">Optimized rate and cost for flexibility.</div>
+                  <button class="rh-btn rh-btn-tier" data-tier="thunder">Choose This Structure</button>
+                </div>
+
+                <div class="rh-tier-card rh-tier-bolt">
+                  <div class="rh-tier-label">⚡ Bolt</div>
+                  <div class="rh-tier-tagline">Lowest Cost</div>
+                  <div class="rh-tier-rate" id="bolt-rate">—</div>
+                  <div class="rh-tier-rate-label">Note Rate</div>
+                  <div class="rh-tier-payment" id="bolt-payment">$—</div>
+                  <div class="rh-tier-payment-label">Monthly P&amp;I</div>
+                  <div class="rh-tier-cost" id="bolt-cost">—</div>
+                  <div class="rh-tier-desc">Minimize upfront cash to close.</div>
+                  <button class="rh-btn rh-btn-tier" data-tier="bolt">Choose This Structure</button>
+                </div>
+
+              </div>
+
+              <div class="rh-confidence">
+                <p><strong>You're in control.</strong> Adjust terms, explore scenarios, or lock in your structure when ready.</p>
+                <p>No pressure. No obligation. Just real options built for investors.</p>
+              </div>
+
+              <div class="rh-cta-strategist">
+                <button class="rh-btn rh-btn-strategist" id="rh-strategist-btn">
+                  Talk to a Loan Strategist
+                </button>
+                <p class="rh-cta-sub">Get expert guidance tailored to your deal.</p>
+              </div>
+
+            </div>
+
+            <div class="rh-results-rejected" id="rh-results-rejected" style="display:none;">
+              <div class="rh-empty-icon">⚠️</div>
+              <h3 id="rh-rejected-headline">No matching programs at this scenario</h3>
+              <p id="rh-rejected-message">Try adjusting your inputs, or talk to a loan strategist for a custom quote.</p>
+              <button class="rh-btn rh-btn-strategist" id="rh-rejected-strategist-btn">
+                Talk to a Loan Strategist
+              </button>
+            </div>
+
+            <div class="rh-results-waitlist" id="rh-results-waitlist" style="display:none;">
+              <div class="rh-empty-icon">🟡</div>
+              <h3 id="rh-waitlist-headline">Coming Soon to Your State</h3>
+              <p id="rh-waitlist-message">Rate Hero's license is in progress. Get on the waitlist and we'll reach out the moment we can serve investors in your state.</p>
+              <div class="rh-waitlist-benefits">
+                <div class="rh-waitlist-benefit"><span class="rh-bolt-mini">⚡</span> First in line when we launch</div>
+                <div class="rh-waitlist-benefit"><span class="rh-bolt-mini">⚡</span> Early access to investor pricing</div>
+                <div class="rh-waitlist-benefit"><span class="rh-bolt-mini">⚡</span> No spam, no pressure</div>
+              </div>
+              <button class="rh-btn rh-btn-strategist" id="rh-waitlist-btn">
+                Join the Waitlist
+              </button>
+              <p class="rh-cta-sub" id="rh-waitlist-eta">Estimated availability: TBD</p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <div class="rh-modal-overlay" id="rh-strategist-modal" style="display:none;">
+        <div class="rh-modal">
+          <button class="rh-modal-close" id="rh-modal-close">×</button>
+          <h2 id="rh-modal-title">Talk to a Loan Strategist</h2>
+          <p id="rh-modal-subtitle">A Rate Hero loan strategist will reach out within one business day.</p>
+
+          <form id="rh-strategist-form">
+            <div class="rh-field">
+              <label for="strategist-first">First Name</label>
+              <input type="text" id="strategist-first" name="first_name" required>
+            </div>
+            <div class="rh-field">
+              <label for="strategist-last">Last Name</label>
+              <input type="text" id="strategist-last" name="last_name" required>
+            </div>
+            <div class="rh-field">
+              <label for="strategist-email">Email</label>
+              <input type="email" id="strategist-email" name="email" required>
+            </div>
+            <div class="rh-field">
+              <label for="strategist-phone">Phone Number</label>
+              <input type="tel" id="strategist-phone" name="phone" required>
+            </div>
+            <div class="rh-field">
+              <label for="strategist-notes">Notes / Additional Context</label>
+              <textarea id="strategist-notes" name="notes" rows="3" placeholder="Anything specific about your deal we should know?"></textarea>
+            </div>
+
+            <button type="submit" class="rh-btn rh-btn-primary" id="rh-strategist-submit">Send to a Strategist</button>
+          </form>
+
+          <div class="rh-modal-success" id="rh-modal-success" style="display:none;">
+            <h3 id="rh-modal-success-title">Thanks!</h3>
+            <p id="rh-modal-success-msg">A Rate Hero loan strategist will reach out within one business day.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="rh-footer">
+    <div class="rh-container">
+      <p class="rh-footer-disclosure">
+        Pricing scenarios are estimates for comparison purposes only and subject to change based on full loan review and eligibility.
+      </p>
+      <p class="rh-footer-nmls">
+        Rate Hero, Inc. NMLS #2822806 · For business-purpose investor loans only.
+      </p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
