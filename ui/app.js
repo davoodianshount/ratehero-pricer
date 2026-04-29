@@ -857,18 +857,18 @@ const COMP_CONFIG = {"_README":"Rate Hero compensation config. This file injects
         'They built a pricing scenario but the state is not yet licensed.\n\n' +
         (borrowerNotes ? 'Borrower notes: ' + borrowerNotes + '\n\n' : '') +
         '--- Pricer Scenario ---\n' +
-        'Program: ' + programLabel + '\n' +
-        valueOrPriceLabel + ': ' + fmt(valueOrPrice) + '\n' +
-        'Loan Amount: ' + fmt(scenario.loan_amount) + '\n' +
-        'LTV: ' + scenario.ltv + '%\n' +
-        'FICO: ' + scenario.fico + ' (band ' + ficoBand + ')\n' +
-        'DSCR Ratio: ' + scenario.dscr + '\n' +
-        'Property Type: ' + scenario.property_type + '\n' +
-        'State: ' + scenario.state + '\n' +
-        'Prepay Term: ' + prepayLabel + '\n' +
-        'Submission Mode: waitlist\n' +
-        'Waitlist State: ' + (CURRENT_WAITLIST_STATE || scenario.state) + '\n' +
-        'Submission Source: ' + submissionSource +
+        'Pricer Program: ' + programLabel + '\n' +
+        'Pricer ' + valueOrPriceLabel + ': ' + fmt(valueOrPrice) + '\n' +
+        'Pricer Loan Amount: ' + fmt(scenario.loan_amount) + '\n' +
+        'Pricer LTV: ' + scenario.ltv + '%\n' +
+        'Pricer FICO: ' + scenario.fico + ' (band ' + ficoBand + ')\n' +
+        'Pricer DSCR Ratio: ' + scenario.dscr + '\n' +
+        'Pricer Property Type: ' + scenario.property_type + '\n' +
+        'Pricer State: ' + scenario.state + '\n' +
+        'Pricer Prepay Term: ' + prepayLabel + '\n' +
+        'Pricer Submission Mode: waitlist\n' +
+        'Pricer Waitlist State: ' + (CURRENT_WAITLIST_STATE || scenario.state) + '\n' +
+        'Pricer Submission Source: ' + submissionSource +
         selectedTierBlock;
     } else {
       scenarioSummary =
@@ -879,17 +879,17 @@ const COMP_CONFIG = {"_README":"Rate Hero compensation config. This file injects
         'Borrower wants a real quote.\n\n' +
         (borrowerNotes ? 'Borrower notes: ' + borrowerNotes + '\n\n' : '') +
         '--- Pricer Scenario ---\n' +
-        'Program: ' + programLabel + '\n' +
-        valueOrPriceLabel + ': ' + fmt(valueOrPrice) + '\n' +
-        'Loan Amount: ' + fmt(scenario.loan_amount) + '\n' +
-        'LTV: ' + scenario.ltv + '%\n' +
-        'FICO: ' + scenario.fico + ' (band ' + ficoBand + ')\n' +
-        'DSCR Ratio: ' + scenario.dscr + '\n' +
-        'Property Type: ' + scenario.property_type + '\n' +
-        'State: ' + scenario.state + '\n' +
-        'Prepay Term: ' + prepayLabel + '\n' +
-        'Submission Mode: pricing\n' +
-        'Submission Source: ' + submissionSource +
+        'Pricer Program: ' + programLabel + '\n' +
+        'Pricer ' + valueOrPriceLabel + ': ' + fmt(valueOrPrice) + '\n' +
+        'Pricer Loan Amount: ' + fmt(scenario.loan_amount) + '\n' +
+        'Pricer LTV: ' + scenario.ltv + '%\n' +
+        'Pricer FICO: ' + scenario.fico + ' (band ' + ficoBand + ')\n' +
+        'Pricer DSCR Ratio: ' + scenario.dscr + '\n' +
+        'Pricer Property Type: ' + scenario.property_type + '\n' +
+        'Pricer State: ' + scenario.state + '\n' +
+        'Pricer Prepay Term: ' + prepayLabel + '\n' +
+        'Pricer Submission Mode: pricing\n' +
+        'Pricer Submission Source: ' + submissionSource +
         selectedTierBlock;
     }
 
@@ -912,6 +912,7 @@ const COMP_CONFIG = {"_README":"Rate Hero compensation config. This file injects
       credit_score: ficoBand,
       timeline: 'asap',
       properties: '1',
+      notes: borrowerNotes ? borrowerNotes + '\n\n' + scenarioSummary : scenarioSummary,
       scenario_summary: scenarioSummary
     };
     try {
