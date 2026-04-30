@@ -443,7 +443,12 @@ const COMP_CONFIG = {"_README":"Rate Hero compensation config. This file injects
     if (!ladderResult.eligible) return ladderResult;
     const ladder = ladderResult.ladder.map(e => Object.assign({}, e, { actual_price: 100 + e.final_price }));
     const lightning = ladder.reduce((lo, e) => e.note_rate < lo.note_rate ? e : lo, ladder[0]);
-    const bolt = ladder.reduce((hi, e) => e.note_rate > hi.note_rate ? e : hi, ladder[0]);
+    // Bolt = lowest cost. actual_price = 100 + final_price (DP convention),
+    // so MIN actual_price = most credit / least cost. When LPC caps create a
+    // plateau of equal-priced rates, pick the lowest note_rate in that plateau.
+    const _boltMinPrice = ladder.reduce((m, e) => e.actual_price < m ? e.actual_price : m, Infinity);
+    const _boltCandidates = ladder.filter(e => Math.abs(e.actual_price - _boltMinPrice) < 0.0001);
+    const bolt = _boltCandidates.reduce((lo, e) => e.note_rate < lo.note_rate ? e : lo, _boltCandidates[0]);
     const thunder = ladder.reduce((cl, e) => Math.abs(e.actual_price - 100) < Math.abs(cl.actual_price - 100) ? e : cl, ladder[0]);
     const enrich = (e, label) => ({
       label,
