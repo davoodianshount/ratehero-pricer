@@ -1,12 +1,14 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ratehero-pricer",
+  "main": "_worker.js",
   "compatibility_date": "2026-04-29",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "ui"
+    "directory": "ui",
+    "binding": "ASSETS"
   },
   "compatibility_flags": [
     "nodejs_compat"
