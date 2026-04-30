@@ -7,7 +7,14 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    if (url.pathname === '/rates' || url.pathname === '/rates/') {
+    // Redirect /rates (no trailing slash) -> /rates/ so relative paths resolve correctly
+    if (url.pathname === '/rates') {
+      url.pathname = '/rates/';
+      return Response.redirect(url.toString(), 301);
+    }
+
+    // Strip /rates/ prefix so static assets in ui/ are found
+    if (url.pathname === '/rates/') {
       url.pathname = '/';
     } else if (url.pathname.startsWith('/rates/')) {
       url.pathname = url.pathname.replace(/^\/rates\//, '/');
