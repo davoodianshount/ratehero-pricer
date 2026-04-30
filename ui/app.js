@@ -599,10 +599,10 @@ const COMP_CONFIG = {"_README":"Rate Hero compensation config. This file injects
     document.getElementById(tierEl + '-payment').textContent = formatMoney(tierData.monthly_pi);
     const costEl = document.getElementById(tierEl + '-cost');
     if (tierData.is_lender_credit) {
-      costEl.textContent = formatMoney(Math.abs(tierData.cost_dollars)) + ' lender credit';
+      costEl.textContent = formatMoney(Math.abs(tierData.cost_dollars)) + ' Rate Hero credit';
       costEl.className = 'rh-tier-cost is-credit';
     } else if (tierData.cost_dollars > 0) {
-      costEl.textContent = formatMoney(tierData.cost_dollars) + ' cost at closing';
+      costEl.textContent = formatMoney(tierData.cost_dollars) + ' due at closing';
       costEl.className = 'rh-tier-cost is-cost';
     } else {
       costEl.textContent = 'Par price';
